@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const Collection = require('discord.js').Collection;
 const readdirSync = require('fs').readdirSync;
-
+const MessageEmbed = require('discord.js').MessageEmbed;
 module.exports = {
     name: "messageCreate",
     emiter: "on",
@@ -20,10 +20,10 @@ module.exports = {
         const args = message.content.split(' ').slice(1);
         let cmd;
 
-        if (bot.commands.has(command)) { cmd = bot.commands.get(command) }
-        else if(bot.aliases.has(command)) { cmd = bot.commands.get(bot.aliases.get(command)) }
+        if (bot.commands.has(command)) { cmd = bot.commands.get(command) }  //command name
+        else if(bot.aliases.has(command)) { cmd = bot.commands.get(bot.aliases.get(command)) } //alias command
 
-
+        //Verificacion de si existe este comando
         if (!cmd){
             const ErrorCommand = new Discord.MessageEmbed()
                 .setColor('#FF0000')
@@ -52,6 +52,22 @@ module.exports = {
         timestamps.set(message.author.id, now);
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
+        //OWNER COMMANDS
+        let owneronoff = props.onlyowner;
+        let msgid = message.author.id;
+        if (owneronoff === true) {
+            if (msgid.toString() === bot.config.ownerid) {
+                cmd.run(bot, message, args).catch (err => bot.emit("error", err, message));
+                return;
+            }
+            const ErrorOwnerID = new MessageEmbed()
+            .setColor('#FF0000')
+            .setTitle('ERROR')
+            .setDescription('Este comando esta permitido solo para desarolladores')
+
+            message.channel.send({ embeds: [ErrorOwnerID] });
+            return;
+        }
 
         // Iniciar Comando
         cmd.run(bot, message, args).catch (err => bot.emit("error", err, message));

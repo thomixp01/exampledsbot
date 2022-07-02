@@ -7,6 +7,7 @@ module.exports = {
     aliases: ["ej", "ejemplo"],
     category: "Utils", //debe ser el mismo q el nombre de la carpeta actual de este comando
     cooldown: 2,
+    onlyowner: false,
     run: async (bot, message, args) => {
         message.reply("Este es un ejemplo de comando");
     }

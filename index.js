@@ -11,9 +11,10 @@ const fs = require('fs');
 const { readdirSync } = require('fs');
 
 //SET COLLECTION
+bot.onlyowner = new Collection();
 bot.aliases = new Collection();
 bot.commands = new Collection();
-bot.config = { prefix: config.PREFIX, }// El prefix de tu bot
+bot.config = { prefix: config.PREFIX, ownerid: config.OWNER }// El prefix de tu bot
 cooldowns = new Collection();
 
 
@@ -25,7 +26,9 @@ for (const subFolder of readdirSync(`${__dirname}/src/commands/`)) {
         let file = require(`${__dirname}/src/commands/${subFolder}/${fileName}`);
 
         bot.commands.set(file.name, file);
-        bot.aliases.set(file.alias, file);
+        file.aliases.forEach(alias => {
+          bot.aliases.set(alias, file.name);
+      });
 
     }
   }
